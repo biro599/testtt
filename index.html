@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة المطعم</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 20px; text-align: center; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 20px; }
+        
+        /* تنسيق الشبكة للأزرار */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        
+        /* تنسيق أزرار المنيو */
+        .item-btn {
+            padding: 15px; border: none; background-color: #0070f3; color: white;
+            border-radius: 10px; cursor: pointer; font-size: 16px; transition: 0.2s;
+        }
+        .item-btn:active { transform: scale(0.95); }
+        .item-btn span { display: block; font-size: 12px; opacity: 0.8; margin-top: 5px; }
+
+        /* قائمة الطلبات */
+        .order-list { text-align: right; background: #fafafa; padding: 10px; border-radius: 8px; min-height: 100px; margin-bottom: 20px; border: 1px solid #ddd; }
+        .order-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
+        
+        /* الفاتورة النهائية */
+        .totals { font-weight: bold; font-size: 18px; text-align: right; margin-top: 10px; }
+        .total-final { color: #28a745; font-size: 24px; margin-top: 5px; }
+
+        /* أزرار التحكم */
+        .controls { display: flex; gap: 10px; }
+        .btn-clear { flex: 1; padding: 15px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🍽️ حاسبة المطعم</h1>
+
+    <div class="menu-grid" id="menu">
+        </div>
+
+    <h3>الطلبات الحالية:</h3>
+    <div class="order-list" id="orderList"></div>
+
+    <div class="totals">
+        <div>المجموع: <span id="subtotal">0</span> ريال</div>
+        <div>الضريبة (15%): <span id="tax">0</span> ريال</div>
+        <div class="total-final">الإجمالي: <span id="total">0</span> ريال</div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-clear" onclick="clearOrder()">تصفير الفاتورة (حساب جديد)</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. عدل المنيو الخاص بك هنا ---
+    const menuItems = [
+        { name: "برجر لحم", price: 25 },
+        { name: "برجر دجاج", price: 20 },
+        { name: "بطاطس", price: 8 },
+        { name: "مشروب غازي", price: 5 },
+        { name: "ماء", price: 2 },
+        { name: "شاورما", price: 12 }
+    ];
+    // ----------------------------------
+
+    let currentOrder = [];
+    const taxRate = 0.15; // نسبة الضريبة 15%
+
+    // دالة إنشاء الأزرار تلقائياً
+    function renderMenu() {
+        const menuContainer = document.getElementById('menu');
+        menuItems.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = 'item-btn';
+            btn.innerHTML = `${item.name} <span>${item.price} ريال</span>`;
+            btn.onclick = () => addItem(item);
+            menuContainer.appendChild(btn);
+        });
+    }
+
+    // إضافة صنف للفاتورة
+    function addItem(item) {
+        currentOrder.push(item);
+        updateDisplay();
+    }
+
+    // تحديث الشاشة والحسابات
+    function updateDisplay() {
+        const orderList = document.getElementById('orderList');
+        orderList.innerHTML = '';
+        
+        let subtotal = 0;
+
+        currentOrder.forEach((item, index) => {
+            subtotal += item.price;
+            orderList.innerHTML += `
+                <div class="order-item">
+                    <span>${item.name}</span>
+                    <span>${item.price} ريال</span>
+                </div>`;
+        });
+
+        const tax = subtotal * taxRate;
+        const total = subtotal + tax;
+
+        document.getElementById('subtotal').innerText = subtotal.toFixed(2);
+        document.getElementById('tax').innerText = tax.toFixed(2);
+        document.getElementById('total').innerText = total.toFixed(2);
+    }
+
+    // تصفير الفاتورة
+    function clearOrder() {
+        currentOrder = [];
+        updateDisplay();
+    }
+
+    // تشغيل الكود عند فتح الصفحة
+    renderMenu();
+</script>
+
+</body>
+</html>
